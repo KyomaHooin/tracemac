@@ -1,16 +1,42 @@
 
 DESCRIPTION
 
-Trace device MAC physical address across L2 segment via STP spanning tree topology filtering and uplink trunk line elimination process. Collect STP database over SNMP. Simple HTML output.
+Trace MAC/IP winin LLDP topology.
+
+REQUIREMENT
+
+python-netsnmp
 
 FILE
 
 <pre>
- tracemac.pl - Main program.
-database.txt - IP address database.
-     map.txt - STP mapping.
-   index.php - Simple HTML frontend.
-    logo.png - Frontend logo.
+ tracemac.py - Main program.
+</pre>
+
+OUTPUT
+
+<pre>
+root@sumerian:/home/svn# ./tracemac 10.10.x.x 00:50:56:b5:84:3b
+LLDP topology
+probing.. 10.10.x.x
+probing.. 10.10.x.x
+probing.. 10.10.x.x
+probing.. 10.10.x.x
+probing.. 10.10.x.x
+probing.. 10.10.x.x
+probing.. 10.10.x.x
+probing.. 10.10.x.x
+probing.. 10.10.x.x
+CAM entry
+10.10.x.x -> 46 [ B22 ]
+10.10.x.x -> 32 [ B8 ]
+10.10.x.x -> 48 [ B22 ]
+10.10.x.x -> 389 [ Trk100 ]
+10.10.x.x -> 48 [ B22 ]
+10.10.x.x -> 48 [ B22 ]
+10.10.x.x -> 1 [ A1 ]
+10.10.x.x -> 48 [ B22 ]
+10.10.x.x Target not in CAM table.
 </pre>
 
 CONTACT
