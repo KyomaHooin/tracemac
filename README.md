@@ -16,7 +16,7 @@ FILE
 OUTPUT
 
 <pre>
-root@sumerian:/home/svn# ./tracemac 10.10.x.x 00:50:56:b5:84:3b
+root@localhost:/home# ./tracemac 10.10.x.x 00:50:56:b5:84:3b
 LLDP topology
 probing.. 10.10.x.x
 probing.. 10.10.x.x
