@@ -1,6 +1,6 @@
 #!/usr/bin/python
 #
-# MAC/IP LLDP
+# MAC/IP STP/LLDP trace
 #
 
 import subprocess,argparse,netsnmp,sys,re
@@ -8,10 +8,14 @@ import subprocess,argparse,netsnmp,sys,re
 target_ip=False
 
 #OID
-lldp_neighbour	='.1.0.8802.1.1.2.1.4.1.1.5'
-local_cam	='.1.3.6.1.2.1.17.4.3.1.1'
-local_ifid	='.1.3.6.1.2.1.17.4.3.1.2'
-if_desc		='.1.3.6.1.2.1.2.2.1.2'
+lldp_neighbour	='.1.0.8802.1.1.2.1.4.1.1.5'	# lldpRemChassisId
+if_desc		='.1.3.6.1.2.1.2.2.1.2'		# ifDescr
+stp_root_port	='.1.3.6.1.2.1.17.2.7.0'	# dot1dStpRootPort
+stp_root_mac	='.1.3.6.1.2.1.17.2.5.0'	# dot1dStpDesignatedRoot
+bridge_id	='.1.3.6.1.2.1.17.1.1.0'	# dot1dBaseBridgeAddress
+bridge_table	='.1.3.6.1.2.1.17.2.15.1.8'	# dot1dStpPortDesignatedBridge
+local_cam	='.1.3.6.1.2.1.17.4.3.1.1'	# dot1dTpFdbAddress
+local_ifid	='.1.3.6.1.2.1.17.4.3.1.2'	# dot1dTpFdbPort
 
 #-----------------
 
@@ -43,6 +47,9 @@ def snmp_walk(oid,ip):
 def hex_to_mac(s):
 	return re.sub('(..)','\\1:',s.encode('hex')).strip(':')
 
+def bridge_to_mac(s):
+	return re.sub('(..)','\\1:',s.encode('hex')[4:]).strip(':')
+
 def mac_to_hex(m):
 	return re.sub(':','',m).decode('hex')
 
@@ -54,6 +61,19 @@ def nbr_probe(hop):
 			if not nbr in NBT:
 				NBT.append(nbr)
 				nbr_probe(nbr)
+
+def stp_probe(hop):
+	brid = snmp_get(bridge_id,hop)
+	print hop,  "id", hex_to_mac(brid)
+	for n in snmp_walk(bridge_table, hop):
+		if n:
+			if bridge_to_mac(n) != hex_to_mac(brid):
+				nbr = get_addr(bridge_to_mac(n))
+				if nbr:
+					print "->", nbr
+					if not nbr in NBT:
+						NBT.append(nbr)
+						stp_probe(nbr)
 
 #-----------------
 
@@ -83,6 +103,9 @@ NBT =[]
 
 NBT.append(args.hop)# first hop
 
+print "STP topology"
+stp_probe(args.hop)
+
 print "LLDP topology"
 nbr_probe(args.hop)
 
@@ -94,7 +117,8 @@ else:
 	target = mac_to_hex(args.target)
 
 for n in NBT:
-	print n,
+	root = snmp_get(stp_root, n)
+	print n, "[", root, "]",
 	if target:
 		cam = snmp_walk(local_cam, n)
 		ifid = snmp_walk(local_ifid, n)
@@ -103,8 +127,9 @@ for n in NBT:
 			index = cam.index(target)
 			if_index = ifid[index]
 			if_name = snmp_get(if_desc + '.' + if_index, n)
-			print "->", if_index, "[", if_name, "]"
+			print "->", if_index, "/", if_name
 		else:
 			print "Target not in CAM table."
 
 sys.exit(3)
+

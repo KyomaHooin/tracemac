@@ -1,16 +1,16 @@
 
 DESCRIPTION
 
-Trace MAC/IP winin LLDP topology.
+Trace MAC/IP within STP/LLDP topology.
 
-REQUIREMENT
+REQUIRE
 
 python-netsnmp
 
 FILE
 
 <pre>
- tracemac.py - Main program.
+tracemac.py - Main program.
 </pre>
 
 OUTPUT
