@@ -37,7 +37,7 @@ Probing STP topology..
 -> 10.10.x.y
 -> 10.10.x.y
 -> 10.10.x.y
-Candidate CAM entry:
+Candidate CAM entry..
 10.10.x.x [ 5 ] -> [ 42 ] B18
 </pre>
 

@@ -77,7 +77,7 @@ def stp_probe(hop):
 #-----------------
 
 #ARGS
-parser = argparse.ArgumentParser(description="Trace IP/MAC within L2 segment using LLDP and CAM/MAC table.")
+parser = argparse.ArgumentParser(description="Trace IP/MAC within L2 segment using STP/LLDP and CAM table.")
 parser.add_argument("-c","--community", help="SNMP community.", default="public")
 parser.add_argument("-v","--version", help="SNMP version.", default=2)
 parser.add_argument("hop", help="First hop IP address.")
