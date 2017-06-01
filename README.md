@@ -5,38 +5,40 @@ Trace MAC/IP within STP/LLDP topology.
 
 REQUIRE
 
-python-netsnmp
+python-netsnmp, arping
 
 FILE
 
 <pre>
-tracemac.py - Main program.
+tracemac - Main program.
 </pre>
 
 OUTPUT
 
 <pre>
-root@localhost:/home# ./tracemac 10.10.x.x 00:50:56:b5:84:3b
-LLDP topology
-probing.. 10.10.x.x
-probing.. 10.10.x.x
-probing.. 10.10.x.x
-probing.. 10.10.x.x
-probing.. 10.10.x.x
-probing.. 10.10.x.x
-probing.. 10.10.x.x
-probing.. 10.10.x.x
-probing.. 10.10.x.x
-CAM entry
-10.10.x.x -> 46 [ B22 ]
-10.10.x.x -> 32 [ B8 ]
-10.10.x.x -> 48 [ B22 ]
-10.10.x.x -> 389 [ Trk100 ]
-10.10.x.x -> 48 [ B22 ]
-10.10.x.x -> 48 [ B22 ]
-10.10.x.x -> 1 [ A1 ]
-10.10.x.x -> 48 [ B22 ]
-10.10.x.x Target not in CAM table.
+root@localhost:/home# ./tracemac 10.10.x.y 00:50:56:b5:84:3b
+Probing LLDP topology.. 
+-> 10.10.x.y
+-> 10.10.x.y
+-> 10.10.x.y
+-> 10.10.x.y
+-> 10.10.x.y
+-> 10.10.x.y
+-> 10.10.x.y
+-> 10.10.x.y
+-> 10.10.x.y
+Probing STP topology.. 
+-> 10.10.x.y
+-> 10.10.x.y
+-> 10.10.x.y
+-> 10.10.x.y
+-> 10.10.x.y
+-> 10.10.x.y
+-> 10.10.x.y
+-> 10.10.x.y
+-> 10.10.x.y
+Candidate CAM entry:
+10.10.x.x [ 5 ] -> [ 42 ] B18
 </pre>
 
 CONTACT

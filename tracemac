@@ -53,24 +53,23 @@ def bridge_to_mac(s):
 def mac_to_hex(m):
 	return re.sub(':','',m).decode('hex')
 
-def nbr_probe(hop):
-	print 'probing..', hop
+def lldp_probe(hop):
+	print "->", hop
 	for n in snmp_walk(lldp_neighbour, hop):
 		nbr = get_addr(hex_to_mac(n))
 		if nbr:
 			if not nbr in NBT:
 				NBT.append(nbr)
-				nbr_probe(nbr)
+				lldp_probe(nbr)
 
 def stp_probe(hop):
-	brid = snmp_get(bridge_id,hop)
-	print hop,  "id", hex_to_mac(brid)
+	brid = snmp_get(bridge_id, hop)
+	print "->", hop
 	for n in snmp_walk(bridge_table, hop):
 		if n:
 			if bridge_to_mac(n) != hex_to_mac(brid):
 				nbr = get_addr(bridge_to_mac(n))
 				if nbr:
-					print "->", nbr
 					if not nbr in NBT:
 						NBT.append(nbr)
 						stp_probe(nbr)
@@ -103,13 +102,14 @@ NBT =[]
 
 NBT.append(args.hop)# first hop
 
-print "STP topology"
-stp_probe(args.hop)
+print "Probing LLDP topology.. "
+lldp_probe(args.hop)
 
-print "LLDP topology"
-nbr_probe(args.hop)
+print"Probing STP topology.. "
+for n in NBT:
+	stp_probe(n)
 
-print "CAM entry"
+print "Candidate CAM entry.."
 if target_ip:
 	target = mac_to_hex(get_addr(args.target))
 else:
@@ -117,19 +117,17 @@ else:
 	target = mac_to_hex(args.target)
 
 for n in NBT:
-	root = snmp_get(stp_root, n)
-	print n, "[", root, "]",
+	root = snmp_get(stp_root_port, n)
 	if target:
 		cam = snmp_walk(local_cam, n)
 		ifid = snmp_walk(local_ifid, n)
 		ifdesc = snmp_walk(if_desc, n)
 		if target in cam:
 			index = cam.index(target)
-			if_index = ifid[index]
-			if_name = snmp_get(if_desc + '.' + if_index, n)
-			print "->", if_index, "/", if_name
-		else:
-			print "Target not in CAM table."
+			if len(ifid) >= index:# index out of bound?
+				if_index = ifid[index]
+				if_name = snmp_get(if_desc + '.' + if_index, n)
+				if if_index != root:
+					print n, "[", root, "] -> [", if_index, "]", if_name
 
 sys.exit(3)
-
