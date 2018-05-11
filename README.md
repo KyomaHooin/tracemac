@@ -41,7 +41,7 @@ Candidate CAM entry..
 10.10.x.x [ 5 ] -> [ 42 ] B18
 </pre>
 
-CONTACT
+SOURCE
 
-Source: https://github.com/KyomaHooin/tracemac
+https://github.com/KyomaHooin/tracemac
 
